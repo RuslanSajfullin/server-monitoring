@@ -1,0 +1,125 @@
+﻿<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <style type="text/css">
+        #namesContainer {
+            width: 300px;
+            float: left;
+        }
+
+        #formContainer {
+            float: left;
+            margin-top: 15px;
+        }
+
+            #formContainer label {
+                width: 200px;
+                float: left;
+            }
+
+            #formContainer div {
+                margin: 0px 0px 20px 0px;
+            }
+
+        #linkContainer {
+            clear: both;
+        }
+    </style>
+    <style>
+        body {
+            background-color: #F0F8FF; /* Цвет фона веб-страницы */
+        }
+    </style>
+</head>
+<body>
+    <div id="formContainer">
+        <div>
+            <label>Имя нового элемента</label>
+            <input type="text" id="newName" />
+            <button id="addNewBtn">Добавить имя</button>
+        </div>
+        <div>
+            <label>Имя элемента для удаления</label>
+            <input type="text" id="nameToDelete" />
+            <button id="deleteBtn">Удалить</button>
+            <button id="deleteAllBtn">Удаляем все объекты Server из БД</button>
+        </div>
+        <div>
+            <p>
+                ServerName: <span id="sevDictT">  IsAvailable </span> <br />
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>
+
+<script>
+
+    $(function () {
+        var simpleHub = $.connection.simpleHub;
+
+        simpleHub.client.showTextessage = function (serv) {
+
+            $("li").remove();
+            var s = serv;
+
+            var jasonData = JSON.parse(serv);
+
+            var i;
+
+            for (i = 0; i < jasonData.length; i++) {
+
+                $('#sevDictT').append("<li>" + jasonData[i]["ServerName"] + ': ' + jasonData[i]["IsAvailable"] + "</li>");
+            }
+        };
+
+        $.connection.hub.start().done(function () {
+
+        });
+
+        $(document).ready(function () {
+            $("#addNewBtn").on("click", postServer);
+            $("#deleteBtn").on("click", deleteServer);
+            $("#deleteAllBtn").on("click", deleteAllServersDb);
+        });
+
+        // добавление нового элемента
+        function postServer() {
+
+            var server = JSON.stringify({ Name: $('#newName').val() });
+
+            $.ajax({
+                url: '@Url.Action("StartLongProcess3", "Server")',
+                type: 'POST',
+                data: { server },
+                success: function (result) { }
+            });
+        }
+
+        // удаление элемента
+        function deleteServer() {
+
+            var server = JSON.stringify({ Name: $('#nameToDelete').val() });
+
+            $.ajax({
+                url: '@Url.Action("DeleteServer", "Server")',
+                type: 'DELETE',
+                data: { server },
+                        success: function (result) { }
+            });
+        }
+
+        //Удаляем все объекты Server из БД
+        function deleteAllServersDb() {
+
+            $.ajax({
+                url: '@Url.Action("DeleteAllServersDb", "Server")',
+                type: 'DELETE'
+            });
+        }
+
+    });
+
+</script>
