@@ -12,7 +12,7 @@ namespace WebSignalR.Jobs
 
         public static void Start()
         {
-            IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
+            IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler().Result;
             scheduler.Start();
 
             IJobDetail job = JobBuilder.Create<ServerAvailability>().Build();
